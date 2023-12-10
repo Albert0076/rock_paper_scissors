@@ -34,7 +34,7 @@ class PlayerObject:
         return self.name == other.name
 
     def random_object(self):
-        return random.choice(list(self.rules.keys()))
+        self.name = random.choice(list(self.rules.keys()))
 
 
 class Player:
@@ -67,6 +67,9 @@ class ComputerPlayer(Player):
     def choose_object(self):
         self.current_object.random_object()
 
+    def reset_object(self):
+        self.current_object = PlayerObject("Computer")
+
 
 class Game:
     def __init__(self):
@@ -96,11 +99,11 @@ class Game:
             elif player_1.current_object > player_2.current_object:
                 self.round_winner = player_1.name
                 player_1.win_round()
-                self.round_result = "Won"
+                self.round_result = "Win"
             else:
                 self.round_winner = player_2.name
-                player_2.win_wound()
-                self.round_result = "Won"
+                player_2.win_round()
+                self.round_result = "Win"
 
     def next_round(self):
         self.current_round += 1
@@ -120,8 +123,8 @@ class Game:
     def report_round(self):
         player_1 = self.players[0]
         player_2 = self.players[1]
-        message = (f"{player_1.name} chose {player_1.current_object}.\n"
-                   f"{player_2.name} chose {player_2.current_object}.\n"
+        message = (f"{player_1.name} chose {player_1.current_object.name}.\n"
+                   f"{player_2.name} chose {player_2.current_object.name}.\n"
                    f"The round resulted in a {self.round_result}.\n")
 
         if self.round_winner == player_1.name:
@@ -147,3 +150,13 @@ class Game:
         else:
             message = f"{self.players[1].name} wins the game"
 
+        return message
+
+
+if __name__ == "__main__":
+    game = Game()
+    game.add_human_player("Albert")
+    game.add_computer_player()
+    game.players[0].choose_object("rock")
+    game.players[1].choose_object()
+    game.find_winner()
