@@ -82,7 +82,6 @@ class Game:
         self.round_winner = None
         self.rules = RULES["rps"]
 
-
     def add_human_player(self, name):
         self.players.append(HumanPlayer(name))
 
@@ -135,7 +134,7 @@ class Game:
             message += f"{player_1.name} won the round.\n"
 
         elif self.round_winner == player_2.name:
-            message += f"{player_2.name} won the round.\n"  #
+            message += f"{player_2.name} won the round.\n"
 
         return message
 
@@ -144,7 +143,6 @@ class Game:
                 f"{self.players[1].name} has {self.players[1].score} points")
 
     def report_winner(self):
-        message = ""
         if self.players[0].score == self.players[1].score:
             message = f"The game is a draw."
 
@@ -205,10 +203,9 @@ class Clinterface:
             print()
             print(self.game.report_round())
             print(self.game.report_score())
-            print()
             self.game.next_round()
 
-        self.game.report_winner()
+        print(self.game.report_winner())
 
     def run_sequence(self):
         self.set_up()
