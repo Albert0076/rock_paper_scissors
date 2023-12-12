@@ -1,4 +1,5 @@
 import random
+import pyinputplus
 
 RULES = {"rps": {"rock": ("scissors",),
                  "scissors": ("paper",),
@@ -42,6 +43,7 @@ class Player:
         self.name = name
         self.score = 0
         self.current_object = None
+        self.rules = RULES["rps"]
 
     def reset_object(self):
         self.current_object = None
@@ -55,14 +57,14 @@ class Player:
 
 class HumanPlayer(Player):
     def choose_object(self, choice):
-        self.current_object = PlayerObject(choice)
+        self.current_object = PlayerObject(choice, self.rules)
 
 
 class ComputerPlayer(Player):
     def __init__(self, name):
         super().__init__(name)
         self.name = "Computer"
-        self.current_object = PlayerObject("Computer")
+        self.current_object = PlayerObject("Computer", self.rules)
 
     def choose_object(self):
         self.current_object.random_object()
@@ -78,6 +80,8 @@ class Game:
         self.players = []
         self.round_result = None
         self.round_winner = None
+        self.rules = RULES["rps"]
+
 
     def add_human_player(self, name):
         self.players.append(HumanPlayer(name))
@@ -152,11 +156,71 @@ class Game:
 
         return message
 
+    def change_rules(self, rules):
+        self.rules = RULES[rules]
+        for player in self.players:
+            player.rules = self.rules
+
+
+class Clinterface:
+    def __init__(self):
+        self.game = Game()
+
+    def set_up(self):
+        print("Welcome to Rock, Paper, Scissors!")
+        for i in range(2):
+            user_choice = pyinputplus.inputChoice(["Computer", "Human"],
+                                                  f"Would you like Player {i + 1} to be a computer or a human player?")
+            if user_choice == "Human":
+                player_name = pyinputplus.inputStr("Enter Name: ")
+                self.game.add_human_player(player_name)
+
+            else:
+                self.game.add_computer_player()
+
+        self.set_max_rounds()
+        self.set_rules()
+
+    def set_max_rounds(self):
+        user_rounds = pyinputplus.inputNum("Input number of rounds: ", min=1)
+        self.game.set_max_rounds(user_rounds)
+
+    def set_rules(self):
+        user_choice = pyinputplus.inputChoice(["RPS", "RPSLS"], "RPS rules or RPSLS rules: ")
+        self.game.change_rules(user_choice.lower())
+
+    def get_choices(self):
+        for player in self.game.players:
+            if isinstance(player, HumanPlayer):
+                player_choice = pyinputplus.inputChoice(list(self.game.rules.keys()), f"{player.name} enter move: ")
+                player.choose_object(player_choice)
+
+            else:
+                player.choose_object()
+
+    def run_game(self):
+        while not self.game.is_finished():
+            self.get_choices()
+            self.game.find_winner()
+            print()
+            print(self.game.report_round())
+            print(self.game.report_score())
+            print()
+            self.game.next_round()
+
+        self.game.report_winner()
+
+    def run_sequence(self):
+        self.set_up()
+        user_quit = False
+        while not user_quit:
+            self.run_game()
+            self.game.reset()
+            user_choice = pyinputplus.inputChoice(["Y", "N"], "Do you want to quit Y/N: ")
+            if user_choice == "Y":
+                user_quit = True
+
 
 if __name__ == "__main__":
-    game = Game()
-    game.add_human_player("Albert")
-    game.add_computer_player()
-    game.players[0].choose_object("rock")
-    game.players[1].choose_object()
-    game.find_winner()
+    CLI = Clinterface()
+    CLI.run_sequence()
