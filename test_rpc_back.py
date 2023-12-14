@@ -86,6 +86,24 @@ class TestGame:
         game.next_round()
         return game
 
+    @pytest.fixture()
+    def game_fix_fn(self):
+        game = Game()
+        random.seed(8)
+        game.add_human_player("Ben")
+        game.add_computer_player()
+        game.set_max_rounds(2)
+        game.players[0].choose_object("paper")
+        game.players[1].choose_object()
+        game.find_winner()
+        game.next_round()
+        random.seed(8)
+        game.players[0].choose_object("paper")
+        game.players[1].choose_object()
+        game.find_winner()
+        game.next_round()
+        return game
+
     def test_game_norm(self, game_fix_norm):
         assert game_fix_norm.max_rounds == 2
         assert game_fix_norm.players[0].name == "Albert"
@@ -111,3 +129,9 @@ class TestGame:
         assert game_fix_nxt.players[1].current_object is None
         assert game_fix_nxt.round_result is None
         assert game_fix_nxt.round_winner is None
+
+    def test_game_fn(self, game_fix_fn):
+        assert game_fix_fn.is_finished()
+        assert game_fix_fn.players[0].score == 2
+        assert game_fix_fn.players[1].score == 0
+
