@@ -1,6 +1,6 @@
-from rpc_back import PlayerObject, HumanPlayer, ComputerPlayer, Game, RULES
-import random
 import pytest
+from rpc_back import PlayerObject, Game, RULES, HumanPlayer, ComputerPlayer
+import random
 
 
 class TestPlayerObjects:
@@ -134,4 +134,3 @@ class TestGame:
         assert game_fix_fn.is_finished()
         assert game_fix_fn.players[0].score == 2
         assert game_fix_fn.players[1].score == 0
-
